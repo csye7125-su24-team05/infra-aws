@@ -1,18 +1,18 @@
 module "eks" {
-  source = "terraform-aws-modules/eks/aws"
+  source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
 
-  cluster_name = "eks-05"
-  cluster_version = "1.29"
-  cluster_ip_family = "ipv4"
-  cluster_endpoint_public_access = true
+  cluster_name                    = "eks-05"
+  cluster_version                 = "1.29"
+  cluster_ip_family               = "ipv4"
+  cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
-  create_cluster_security_group = false
-  cluster_security_group_id = aws_security_group.cluster_vpc_secruity_group.id
-  vpc_id = aws_vpc.cluster_vpc.id
-  subnet_ids = values(aws_subnet.subnets)[*].id
-  create_iam_role = false
-  iam_role_arn = aws_iam_role.eks_role.arn
+  create_cluster_security_group   = false
+  cluster_security_group_id       = aws_security_group.cluster_vpc_secruity_group.id
+  vpc_id                          = aws_vpc.cluster_vpc.id
+  subnet_ids                      = values(aws_subnet.subnets)[*].id
+  create_iam_role                 = false
+  iam_role_arn                    = aws_iam_role.eks_role.arn
 
   access_entries = {
     dev-nex = {
@@ -35,7 +35,7 @@ module "eks" {
       most_recent = true
     }
     aws-ebs-csi-driver = {
-      most_recent = true
+      most_recent  = true
       iam_role_arn = module.ebs_csi_irsa_role.iam_role_arn
     }
   }
@@ -44,15 +44,15 @@ module "eks" {
 
   eks_managed_node_groups = {
     eks-05-mng = {
-      max_size = 6
-      min_size = 3
-      desired_size = 3
-      instance_types = ["c3.large"]
-      capacity_type = "ON_DEMAND"
+      max_size        = 6
+      min_size        = 3
+      desired_size    = 3
+      instance_types  = ["c3.large"]
+      capacity_type   = "ON_DEMAND"
       create_iam_role = false
-      vpc_id = aws_vpc.cluster_vpc.id
-      subnet_ids = values(aws_subnet.subnets)[*].id
-      iam_role_arn = aws_iam_role.eks_node_role.arn
+      vpc_id          = aws_vpc.cluster_vpc.id
+      subnet_ids      = values(aws_subnet.subnets)[*].id
+      iam_role_arn    = aws_iam_role.eks_node_role.arn
     }
   }
 
@@ -60,7 +60,7 @@ module "eks" {
 
   tags = {
     Environment = "dev"
-    Terraform  = "true"
+    Terraform   = "true"
   }
 
   depends_on = [aws_security_group.cluster_vpc_secruity_group, aws_vpc.cluster_vpc, aws_subnet.subnets, aws_iam_role.eks_role, aws_iam_role.eks_node_role]
