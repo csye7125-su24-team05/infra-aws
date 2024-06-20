@@ -10,9 +10,9 @@ data "aws_iam_policy_document" "eks_assume_role_policy" {
 }
 
 resource "aws_iam_role" "eks_role" {
-  name               = "eks-role"
-  assume_role_policy = data.aws_iam_policy_document.eks_assume_role_policy.json
-  managed_policy_arns = [ "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" ]
+  name                = "eks-role"
+  assume_role_policy  = data.aws_iam_policy_document.eks_assume_role_policy.json
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"]
 }
 
 data "aws_iam_policy_document" "eks_node_assume_role_policy" {
@@ -27,15 +27,15 @@ data "aws_iam_policy_document" "eks_node_assume_role_policy" {
 }
 
 resource "aws_iam_role" "eks_node_role" {
-  name               = "eks-node-role"
-  assume_role_policy = data.aws_iam_policy_document.eks_node_assume_role_policy.json
-  managed_policy_arns = [ "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy", "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy", "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly" ]
+  name                = "eks-node-role"
+  assume_role_policy  = data.aws_iam_policy_document.eks_node_assume_role_policy.json
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy", "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy", "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"]
 }
 
 resource "aws_iam_policy" "ebs_volume_policy" {
   name        = "ebs_volume_policy"
   description = "Allow EBS volume operations"
-  policy      = jsonencode(
+  policy = jsonencode(
     {
       Version = "2012-10-17",
       Statement = [
@@ -57,7 +57,7 @@ resource "aws_iam_policy" "ebs_volume_policy" {
             "ec2:ModifyVolumeAttribute",
             "ec2:DescribeVolumeAttribute"
           ],
-          Effect   = "Allow",
+          Effect = "Allow",
           Resource = [
             "arn:aws:ec2:*:905418203195:volume/*",
             "arn:aws:ec2:*:905418203195:instance/*"
@@ -71,5 +71,5 @@ resource "aws_iam_policy" "ebs_volume_policy" {
 resource "aws_iam_role_policy_attachment" "eks_node_role_attachment" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = aws_iam_policy.ebs_volume_policy.arn
-  depends_on = [ aws_iam_policy.ebs_volume_policy, aws_iam_role.eks_node_role ]
+  depends_on = [aws_iam_policy.ebs_volume_policy, aws_iam_role.eks_node_role]
 }
