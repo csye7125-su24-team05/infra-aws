@@ -1,12 +1,15 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
+  providers = {
+    aws = aws.profile
+  }
 
-  cluster_name                    = "eks-05"
-  cluster_version                 = "1.29"
-  cluster_ip_family               = "ipv4"
-  cluster_endpoint_public_access  = true
-  cluster_endpoint_private_access = true
+  cluster_name                    = var.eks.cluster_name
+  cluster_version                 = var.eks.cluster_version
+  cluster_ip_family               = var.eks.cluster_ip_family
+  cluster_endpoint_public_access  = var.eks.cluster_endpoint_public_access
+  cluster_endpoint_private_access = var.eks.cluster_endpoint_private_access
   create_cluster_security_group   = false
   cluster_security_group_id       = aws_security_group.cluster_vpc_secruity_group.id
   vpc_id                          = aws_vpc.cluster_vpc.id
@@ -14,41 +17,19 @@ module "eks" {
   create_iam_role                 = false
   iam_role_arn                    = aws_iam_role.eks_role.arn
 
-  access_entries = {
-    dev-nex = {
-      principal_arn = "arn:aws:iam::905418203195:user/dev-nex"
-      type          = "STANDARD",
-    }
-  }
+  access_entries = var.eks.access_entries
 
-  cluster_addons = {
-    coredns = {
-      most_recent = true
-    }
-    kube-proxy = {
-      most_recent = true
-    }
-    vpc-cni = {
-      most_recent = true
-    }
-    eks-pod-identity-agent = {
-      most_recent = true
-    }
-    aws-ebs-csi-driver = {
-      most_recent  = true
-      iam_role_arn = module.ebs_csi_irsa_role.iam_role_arn
-    }
-  }
+  cluster_addons = var.eks.cluster_addons
 
-  authentication_mode = "API_AND_CONFIG_MAP"
+  authentication_mode = var.eks.authentication_mode
 
   eks_managed_node_groups = {
-    eks-05-mng = {
-      max_size        = 6
-      min_size        = 3
-      desired_size    = 3
-      instance_types  = ["c3.large"]
-      capacity_type   = "ON_DEMAND"
+    for key, value in var.eks.eks_managed_node_groups : key => {
+      max_size        = value.max_size
+      min_size        = value.min_size
+      desired_size    = value.desired_size
+      instance_types  = value.instance_types
+      capacity_type   = value.capacity_type
       create_iam_role = false
       vpc_id          = aws_vpc.cluster_vpc.id
       subnet_ids      = values(aws_subnet.subnets)[*].id
@@ -56,26 +37,9 @@ module "eks" {
     }
   }
 
-  enable_cluster_creator_admin_permissions = true
+  enable_cluster_creator_admin_permissions = var.eks.enable_cluster_creator_admin_permissions
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.tags, var.eks.tags)
 
   depends_on = [aws_security_group.cluster_vpc_secruity_group, aws_vpc.cluster_vpc, aws_subnet.subnets, aws_iam_role.eks_role, aws_iam_role.eks_node_role]
-}
-
-module "ebs_csi_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-
-  role_name             = "${module.eks.cluster_name}-ebs-csi"
-  attach_ebs_csi_policy = true
-
-  oidc_providers = {
-    ex = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
-    }
-  }
 }
