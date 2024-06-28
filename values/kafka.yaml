@@ -1,0 +1,39 @@
+replicaCount: 3
+
+volumePermissions:
+  enabled: true
+
+provisioning:
+  enabled: true
+  topics:
+    - name: cve-data-push
+      partitions: 3
+      replicationFactor: 3
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+resources:
+  requests:
+    memory: 2Gi
+    cpu: 500m
+  limits:
+    memory: 4Gi
+    cpu: 1000m
+
+metrics:
+  kafka:
+    enabled: true
+    port: 9308
+
+logLevel: INFO
+
+sasl:
+  client:
+    users:
+      - ""
+    passwords: ""
+
+kraft:
+  enabled: true

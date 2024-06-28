@@ -17,7 +17,7 @@ resource "helm_release" "postgresql-ha" {
   chart      = "postgresql-ha"
   name       = "cve-db"
   namespace  = var.namespaces["subscriber"].name
-  values     = ["${file("postgresql.yaml")}"]
+  values     = ["${file("values/postgresql.yaml")}"]
 
   set {
     name  = "global.storageClass"
@@ -25,4 +25,15 @@ resource "helm_release" "postgresql-ha" {
   }
 
   depends_on = [kubernetes_namespace.namespace["subscriber"], kubernetes_storage_class.storage_class]
+}
+
+resource "helm_release" "kafka-ha" {
+  provider   = helm.eks-helm
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "kafka"
+  name       = "cve-kafka"
+  namespace  = var.namespaces["kafka"].name
+  values     = ["${file("values/kafka.yaml")}"]
+
+  depends_on = [kubernetes_namespace.namespace["kafka"], kubernetes_storage_class.storage_class]
 }
