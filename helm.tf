@@ -35,5 +35,10 @@ resource "helm_release" "kafka-ha" {
   namespace  = var.namespaces["kafka"].name
   values     = ["${file("values/kafka.yaml")}"]
 
+  set {
+    name  = "global.storageClass"
+    value = kubernetes_storage_class.storage_class.metadata[0].name
+  }
+
   depends_on = [kubernetes_namespace.namespace["kafka"], kubernetes_storage_class.storage_class]
 }
