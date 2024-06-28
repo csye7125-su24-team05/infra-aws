@@ -1,0 +1,19 @@
+global:
+  postgresql:
+    username: ""
+    password: ""
+    database: "cve"
+    repmgrUsername: ""
+    repmgrPassword: ""
+    repmgrDatabase: ""
+    existingSecret: ""
+  pgpool:
+    adminUsername: ""
+    adminPassword: ""
+    existingSecret: ""
+postgresql:
+  replicaCount: 2
+  syncReplication: true
+  
+persistence:
+  size: 3Gi
