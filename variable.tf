@@ -75,3 +75,16 @@ variable "vpc" {
   })
 }
 
+variable "namespaces" {
+  type = map(object({
+    name = string
+  }))
+}
+
+variable "storage_class" {
+  type = object({
+    name                = string
+    storage_provisioner = string
+    parameters          = map(string)
+  })
+}

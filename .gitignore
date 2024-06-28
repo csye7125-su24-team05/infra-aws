@@ -64,3 +64,5 @@ Session.vim
 
 # dist
 dist/*
+
+.env
