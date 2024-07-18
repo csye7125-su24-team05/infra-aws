@@ -19,7 +19,29 @@ module "eks" {
 
   access_entries = var.eks.access_entries
 
-  cluster_addons = var.eks.cluster_addons
+  cluster_addons = {
+    coredns = {
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+      configuration_values = jsonencode({
+        enableNetworkPolicy = "true"
+       
+        # NETWORK_POLICY_ENFORCING_MODE = "strict"
+        
+      })
+    }
+    eks-pod-identity-agent = {
+      most_recent = true
+    }
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
+  }
 
   authentication_mode = var.eks.authentication_mode
 

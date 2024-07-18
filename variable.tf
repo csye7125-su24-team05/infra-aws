@@ -52,9 +52,7 @@ variable "eks" {
         })
       }))
     }))
-    cluster_addons = map(object({
-      most_recent = bool
-    }))
+    # cluster_addons = any
     authentication_mode = string
     eks_managed_node_groups = map(object({
       max_size       = number
