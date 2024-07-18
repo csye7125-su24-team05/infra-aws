@@ -40,7 +40,8 @@ resource "aws_iam_role" "eks_node_role" {
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
-    aws_iam_policy.kms_policy.arn
+    aws_iam_policy.kms_policy.arn,
+    aws_iam_policy.autoscaler_policy.arn
   ]
 }
 
@@ -67,6 +68,35 @@ resource "aws_iam_policy" "kms_policy" {
           Effect = "Allow",
           Resource = [
             "arn:aws:kms:*:905418203195:key/*"
+          ]
+        }
+      ]
+    }
+  )
+}
+
+resource "aws_iam_policy" "autoscaler_policy" {
+  provider = aws.profile
+  name = "autoscaler_policy"
+  description = "Allow autoscaler operations"
+  policy = jsonencode(
+    {
+      Version = "2012-10-17",
+      Statement = [
+        {
+          Action = [
+            "autoscaling:DescribeAutoScalingGroups",
+            "autoscaling:DescribeAutoScalingInstances",
+            "autoscaling:DescribeLaunchConfigurations",
+            "autoscaling:SetDesiredCapacity",
+            "autoscaling:TerminateInstanceInAutoScalingGroup",
+            "autoscaling:DescribeTags",
+            "ec2:DescribeLaunchTemplateVersions",
+            "eks:DescribeNodegroup"
+          ],
+          Effect = "Allow",
+          Resource = [
+            "*"
           ]
         }
       ]
