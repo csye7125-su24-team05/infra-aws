@@ -88,10 +88,9 @@ variable "storage_class" {
 
 variable "autoscaler" {
   type = object({
-    repository          = string
-    repository_username = string
-    repository_password = string
-    chart               = string
+    token     = string
+    chart_url = string
+    chart     = string
   })
   sensitive = true
 }

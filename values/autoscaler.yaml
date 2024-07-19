@@ -3,8 +3,8 @@
 affinity: {}
 
 repo:
-  mountPath: ""
-  authFile: ""
+  mountPath: "/.docker"
+  authFile: ".dockerconfigjson"
   url: docker://registry-1.docker.io/nexflare73/cluster-autoscaler
   remoteUrl: docker://registry.k8s.io/autoscaling/cluster-autoscaler
 
@@ -23,7 +23,7 @@ autoDiscovery:
   clusterName: eks-05 # cluster.local
 
   # autoDiscovery.namespace -- Enable autodiscovery via cluster namespace for for `cloudProvider=clusterapi`
-  namespace: # default
+  namespace: autoscaler # default
 
   # autoDiscovery.tags -- ASG tags to match, run through `tpl`.
   tags:
@@ -222,7 +222,9 @@ extraVolumes: []
   #     path: /etc/ssl/certs/ca-bundle.crt
 
 # extraVolumeSecrets -- Additional volumes to mount from Secrets.
-extraVolumeSecrets: {}
+extraVolumeSecrets: 
+  docker-config-volume:
+    name: docker-config
   # autoscaler-vol:
   #   mountPath: /data/autoscaler/
   # custom-vol:
@@ -240,7 +242,7 @@ hostNetwork: false
 
 init:
   repository: nexflare73/docker-sync
-  tag: latest
+  tag: 0.0.2
   pullPolicy: IfNotPresent
 
 image:
@@ -255,7 +257,7 @@ image:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   ##
   # image.pullSecrets -- Image pull secrets
-  pullSecrets: {}
+  pullSecrets: 
   # myRegistrKeySecretName: your base64 encoded dockerconfigjson
 
 # kubeTargetVersionOverride -- Allow overriding the `.Capabilities.KubeVersion.GitVersion` check. Useful for `helm template` commands.
