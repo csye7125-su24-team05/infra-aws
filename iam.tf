@@ -76,8 +76,8 @@ resource "aws_iam_policy" "kms_policy" {
 }
 
 resource "aws_iam_policy" "autoscaler_policy" {
-  provider = aws.profile
-  name = "autoscaler_policy"
+  provider    = aws.profile
+  name        = "autoscaler_policy"
   description = "Allow autoscaler operations"
   policy = jsonencode(
     {
