@@ -30,9 +30,9 @@ module "eks" {
       most_recent = true
       configuration_values = jsonencode({
         enableNetworkPolicy = "true"
-       
+
         # NETWORK_POLICY_ENFORCING_MODE = "strict"
-        
+
       })
     }
     eks-pod-identity-agent = {
