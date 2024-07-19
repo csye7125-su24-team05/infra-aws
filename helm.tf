@@ -45,10 +45,10 @@ resource "helm_release" "kafka-ha" {
 
 resource "helm_release" "autoscaler" {
   repository = "https://kubernetes.github.io/autoscaler"
-  name  = "cluster-autoscaler"
-  chart = "cluster-autoscaler"
-  namespace = var.namespaces["autoscaler"].name
-  values = ["${file("values/autoscaler.yaml")}"]
+  name       = "cluster-autoscaler"
+  chart      = "cluster-autoscaler"
+  namespace  = var.namespaces["autoscaler"].name
+  values     = ["${file("values/autoscaler.yaml")}"]
 
-  depends_on = [ kubernetes_namespace.namespace["autoscaler"] ]
+  depends_on = [kubernetes_namespace.namespace["autoscaler"]]
 }
