@@ -11,21 +11,21 @@ provider "helm" {
   }
 }
 
-# resource "helm_release" "postgresql-ha" {
-#   provider   = helm.eks-helm
-#   repository = "https://charts.bitnami.com/bitnami"
-#   chart      = "postgresql-ha"
-#   name       = "cve-db"
-#   namespace  = var.namespaces["subscriber"].name
-#   values     = ["${file("values/postgresql.yaml")}"]
+resource "helm_release" "postgresql-ha" {
+  provider   = helm.eks-helm
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "postgresql-ha"
+  name       = "cve-db"
+  namespace  = var.namespaces["subscriber"].name
+  values     = ["${file("values/postgresql.yaml")}"]
 
-#   set {
-#     name  = "global.storageClass"
-#     value = kubernetes_storage_class.storage_class.metadata[0].name
-#   }
+  set {
+    name  = "global.storageClass"
+    value = kubernetes_storage_class.storage_class.metadata[0].name
+  }
 
-#   depends_on = [kubernetes_namespace.namespace["subscriber"], kubernetes_storage_class.storage_class]
-# }
+  depends_on = [kubernetes_namespace.namespace["subscriber"], kubernetes_storage_class.storage_class]
+}
 
 resource "helm_release" "kafka-ha" {
   provider   = helm.eks-helm
