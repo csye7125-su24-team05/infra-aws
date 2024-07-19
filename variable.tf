@@ -52,7 +52,6 @@ variable "eks" {
         })
       }))
     }))
-    # cluster_addons = any
     authentication_mode = string
     eks_managed_node_groups = map(object({
       max_size       = number
@@ -84,5 +83,28 @@ variable "storage_class" {
     name                = string
     storage_provisioner = string
     parameters          = map(string)
+  })
+}
+
+variable "autoscaler" {
+  type = object({
+    repository          = string
+    repository_username = string
+    repository_password = string
+    chart               = string
+  })
+  sensitive = true
+}
+
+variable "limit_range" {
+  type = object({
+    default_limit = object({
+      memory = string
+      cpu    = string
+    })
+    default_request = object({
+      memory = string
+      cpu    = string
+    })
   })
 }

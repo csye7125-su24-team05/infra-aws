@@ -34,3 +34,28 @@ resource "kubernetes_storage_class" "storage_class" {
 
   depends_on = [module.eks, aws_kms_key.ebs_kms_key]
 }
+
+resource "kubernetes_limit_range" "limit_range" {
+  provider = kubernetes.k8s
+  for_each = var.namespaces
+  metadata {
+    name      = "limit-range"
+    namespace = each.value.name
+  }
+  spec {
+    limit {
+      type = "Container"
+      default = {
+        memory = var.limit_range.default_limit.memory
+        cpu    = var.limit_range.default_limit.cpu
+      }
+      default_request = {
+        memory = var.limit_range.default_request.memory
+        cpu    = var.limit_range.default_request.cpu
+      }
+    }
+  }
+
+  depends_on = [module.eks, kubernetes_namespace.namespace]
+
+}

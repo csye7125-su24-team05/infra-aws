@@ -5,7 +5,7 @@ global:
     database: "cve"
     repmgrUsername: ""
     repmgrPassword: ""
-    repmgrDatabase: ""
+    repmgrDatabase: "repmgr"
     existingSecret: ""
   pgpool:
     adminUsername: ""
@@ -14,6 +14,31 @@ global:
 postgresql:
   replicaCount: 2
   syncReplication: true
-  
+  networkPolicy:
+    enabled: true
+    allowExternal: false
+    allowExternalEgress: false
+
+pgpool:
+  networkPolicy:
+    enabled: true
+    allowExternal: false
+    allowExternalEgress: false
+    extraIngress:
+      - ports:
+        - port: 5432
+          protocol: TCP
+        from:
+        - podSelector: 
+            matchLabels:
+              app.kubernetes.io/component: cve-consumer
+    extraEgress:
+      - ports:
+        - port: 5432
+          protocol: TCP
+        to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: cve-consumer
 persistence:
   size: 3Gi
