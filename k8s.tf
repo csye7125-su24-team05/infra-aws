@@ -62,50 +62,55 @@ resource "kubernetes_limit_range" "limit_range" {
 
 }
 
-# resource "kubernetes_network_policy" "network_policy" {
-#   provider = kubernetes.k8s
-#   for_each = {
-#     for ns, ns_data in var.namespaces : ns => ns_data
-#     if ns_data.istio_injection == "enabled"
-#   }
-#   metadata {
-#     name      = "network-policy"
-#     namespace = each.value.name
-#   }
-#   spec {
-#     pod_selector {
-#       match_expressions {
-#         key      = "sidecar.istio.io/inject"
-#         operator = "NotIn"
-#         values   = ["false"]
-#       }
-#     }
-#     ingress {
-#       from {
-#         namespace_selector {}
-#       }
-#       from {
-#         pod_selector {
-#           match_expressions {
-#             key     = "app.kubernetes.io/name"
-#             operator = "In"
-#             values   = ["prometheus", "istiod"]
-#           }
-#         }
-#       }
-#       ports {
-#         protocol = "TCP"
-#         port     = "15090"
-#       }
-#       ports {
-#         protocol = "TCP"
-#         port     = "15020"
-#       }
-#     }
+resource "kubernetes_network_policy" "network_policy" {
+  provider = kubernetes.k8s
+  for_each = {
+    for ns, ns_data in var.namespaces : ns => ns_data
+    if ns_data.istio_injection == "enabled"
+  }
+  metadata {
+    name      = "network-policy"
+    namespace = each.value.name
+  }
+  spec {
+    pod_selector {
+      match_expressions {
+        key      = "sidecar.istio.io/inject"
+        operator = "NotIn"
+        values   = ["false"]
+      }
+    }
+    ingress {
+      from {
+        namespace_selector {}
+      }
+      from {
+        pod_selector {
+          match_expressions {
+            key      = "app.kubernetes.io/name"
+            operator = "In"
+            values   = ["prometheus", "istiod"]
+          }
+        }
+      }
+      ports {
+        protocol = "TCP"
+        port     = "15090"
+      }
+      ports {
+        protocol = "TCP"
+        port     = "15020"
+      }
 
-#     egress {}
-#     policy_types = ["Ingress", "Egress"]
-#   }
+      ports {
+        protocol = "TCP"
+        port     = "8080"
+      }
+    }
 
-#   depends_on = [module.eks, kubernetes_namespace.namespace]
-# }
+    egress {}
+    policy_types = ["Ingress", "Egress"]
+  }
+
+  depends_on = [module.eks, kubernetes_namespace.namespace]
+}
