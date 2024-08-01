@@ -30,9 +30,7 @@ module "eks" {
       most_recent = true
       configuration_values = jsonencode({
         enableNetworkPolicy = "true"
-
         # NETWORK_POLICY_ENFORCING_MODE = "strict"
-
       })
     }
     eks-pod-identity-agent = {
@@ -60,6 +58,7 @@ module "eks" {
   }
 
   enable_cluster_creator_admin_permissions = var.eks.enable_cluster_creator_admin_permissions
+  node_security_group_additional_rules     = var.eks.node_security_group_additional_rule
 
   tags = merge(var.tags, var.eks.tags)
 

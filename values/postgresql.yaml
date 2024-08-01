@@ -18,7 +18,11 @@ postgresql:
     enabled: true
     allowExternal: false
     allowExternalEgress: false
-
+    extraIngress:
+      - ports:
+        - port: 9187
+          protocol: TCP
+        from: []
 pgpool:
   networkPolicy:
     enabled: true
@@ -40,5 +44,20 @@ pgpool:
         - podSelector:
             matchLabels:
               app.kubernetes.io/component: cve-consumer
+      - ports:
+        - port: 15012
+          protocol: TCP
+        - port: 15017
+          protocol: TCP
+        to:
+        - namespaceSelector:
+            matchLabels:
+              name: istio-system
 persistence:
-  size: 3Gi
+  size: 2Gi
+
+commonLabels:
+  sidecar.istio.io/inject: "false"
+
+metrics:
+  enabled: true
