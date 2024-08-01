@@ -1,0 +1,4 @@
+fluentBitReadFromHead: "On"
+# fluentBitHttpPort: "2020"
+regionName: "us-east-1"
+clusterName: "eks-05"

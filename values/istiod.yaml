@@ -25,15 +25,15 @@ defaults:
     # Resources for a small pilot install
     resources:
       requests:
-        cpu: 500m
-        memory: 2048Mi
+        cpu: 300m
+        memory: 500Mi
 
     # Set to `type: RuntimeDefault` to use the default profile if available.
     seccompProfile: {}
 
     # Whether to use an existing CNI installation
     cni:
-      enabled: false
+      enabled: true
       provider: default
 
     # Additional container arguments
@@ -232,10 +232,10 @@ defaults:
     defaultResources:
       requests:
         cpu: 10m
-      #   memory: 128Mi
-      # limits:
-      #   cpu: 100m
-      #   memory: 128Mi
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
 
     # Default hub for Istio images.
     # Releases are published to docker hub under 'istio' project.
@@ -373,7 +373,7 @@ defaults:
           cpu: 100m
           memory: 128Mi
         limits:
-          cpu: 2000m
+          cpu: 1000m
           memory: 1024Mi
 
       # Default port for Pilot agent health checks. A value of 0 will disable health checking.

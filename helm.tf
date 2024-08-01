@@ -59,6 +59,7 @@ resource "helm_release" "cloudwatch" {
   name      = "cluster-cloudwatch"
   chart     = "./${var.cloudwatch.chart}"
   namespace = var.namespaces["amazon-cloudwatch"].name
+  values    = ["${file("values/cloudwatch.yaml")}"]
 
   depends_on = [kubernetes_namespace.namespace["amazon-cloudwatch"], null_resource.download_chart, helm_release.istiod]
 }
@@ -74,14 +75,14 @@ resource "helm_release" "istio-base" {
   depends_on = [kubernetes_namespace.namespace["istio-system"]]
 }
 
-# resource "helm_release" "istio-cni" {
-#   provider   = helm.eks-helm
-#   repository = "https://istio-release.storage.googleapis.com/charts"
-#   chart      = "cni"
-#   name       = "istio-cni"
-#   namespace  = var.namespaces["istio-system"].name
-#   depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istio-base]
-# }
+resource "helm_release" "istio-cni" {
+  provider   = helm.eks-helm
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "cni"
+  name       = "istio-cni"
+  namespace  = var.namespaces["istio-system"].name
+  depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istio-base]
+}
 
 resource "helm_release" "istiod" {
   provider   = helm.eks-helm

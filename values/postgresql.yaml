@@ -2,7 +2,7 @@ global:
   postgresql:
     username: ""
     password: ""
-    database: "cve"
+    database: ""
     repmgrUsername: ""
     repmgrPassword: ""
     repmgrDatabase: "repmgr"
@@ -23,6 +23,14 @@ postgresql:
         - port: 9187
           protocol: TCP
         from: []
+  # extendedConf:
+  #   log_destination: 'stderr'
+  #   logging_collector: 'on'
+  #   log_directory: 'pg_log'
+  #   log_filename: 'postgresql.log'
+  #   log_format: 'json'
+  #   log_statement: 'all'
+  #   log_timezone: 'UTC'
 pgpool:
   networkPolicy:
     enabled: true
@@ -57,7 +65,7 @@ persistence:
   size: 2Gi
 
 commonLabels:
-  sidecar.istio.io/inject: "false"
+  app: postgresql-cve
 
 metrics:
   enabled: true
