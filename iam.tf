@@ -41,7 +41,8 @@ resource "aws_iam_role" "eks_node_role" {
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
     aws_iam_policy.kms_policy.arn,
-    aws_iam_policy.autoscaler_policy.arn
+    aws_iam_policy.autoscaler_policy.arn,
+    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
   ]
 }
 
