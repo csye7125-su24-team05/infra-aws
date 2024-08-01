@@ -1,6 +1,7 @@
 controller:
-  replicaCount: 5
-  podLabels: { "appName": "kafka_csye7125" }
+  replicaCount: 3
+  podLabels: 
+    app: "kafka-cye7125"
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
@@ -19,10 +20,17 @@ volumePermissions:
 
 provisioning:
   enabled: true
+  podLabels:
+    sidecar.istio.io/inject: "false"
   topics:
     - name: cve-data-push
       partitions: 3
       replicationFactor: 3
+  # postScript: |-
+  #   #!/bin/bash
+  #   until curl -fsI http://localhost:15021/healthz/ready; do echo "Waiting for Sidecar..."; done;
+  #   echo "Sidecar available. Running the command...";
+  #   x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
 
 persistence:
   enabled: true
@@ -30,13 +38,15 @@ persistence:
 
 resources:
   requests:
-    memory: 2Gi
+    memory: 100Mi
     cpu: 500m
   limits:
-    memory: 4Gi
+    memory: 200Mi
     cpu: 1000m
 
 metrics:
+  jmx:
+    enabled: true
   kafka:
     enabled: true
     port: 9308

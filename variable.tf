@@ -31,7 +31,7 @@ variable "sg_rules" {
     from_port   = number
     to_port     = number
     protocol    = string
-    cidr_blocks = list(string)
+    cidr_blocks = optional(list(string))
   }))
 }
 
@@ -62,6 +62,14 @@ variable "eks" {
     }))
     enable_cluster_creator_admin_permissions = bool
     tags                                     = map(string)
+    node_security_group_additional_rule = optional(map(object({
+      description                   = optional(string)
+      type                          = string
+      from_port                     = number
+      to_port                       = number
+      protocol                      = string
+      source_cluster_security_group = bool
+    })))
   })
 }
 
@@ -74,7 +82,8 @@ variable "vpc" {
 
 variable "namespaces" {
   type = map(object({
-    name = string
+    name            = string
+    istio_injection = optional(string)
   }))
 }
 

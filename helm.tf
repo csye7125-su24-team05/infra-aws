@@ -24,7 +24,7 @@ resource "helm_release" "postgresql-ha" {
     value = kubernetes_storage_class.storage_class.metadata[0].name
   }
 
-  depends_on = [kubernetes_namespace.namespace["subscriber"], kubernetes_storage_class.storage_class]
+  depends_on = [kubernetes_namespace.namespace["subscriber"], kubernetes_storage_class.storage_class, helm_release.istiod]
 }
 
 resource "helm_release" "kafka-ha" {
@@ -40,7 +40,7 @@ resource "helm_release" "kafka-ha" {
     value = kubernetes_storage_class.storage_class.metadata[0].name
   }
 
-  depends_on = [kubernetes_namespace.namespace["kafka"], kubernetes_storage_class.storage_class]
+  depends_on = [kubernetes_namespace.namespace["kafka"], kubernetes_storage_class.storage_class, helm_release.istiod]
 }
 
 resource "helm_release" "autoscaler" {
@@ -50,5 +50,48 @@ resource "helm_release" "autoscaler" {
   namespace = var.namespaces["autoscaler"].name
   values    = ["${file("values/autoscaler.yaml")}"]
 
-  depends_on = [kubernetes_namespace.namespace["autoscaler"], null_resource.download_chart]
+  depends_on = [kubernetes_namespace.namespace["autoscaler"], null_resource.download_chart, helm_release.istiod]
+}
+
+resource "helm_release" "istio-base" {
+  provider   = helm.eks-helm
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "base"
+  name       = "istio-base"
+  namespace  = var.namespaces["istio-system"].name
+  values     = ["${file("values/istio-base.yaml")}"]
+
+  depends_on = [kubernetes_namespace.namespace["istio-system"]]
+}
+
+# resource "helm_release" "istio-cni" {
+#   provider   = helm.eks-helm
+#   repository = "https://istio-release.storage.googleapis.com/charts"
+#   chart      = "cni"
+#   name       = "istio-cni"
+#   namespace  = var.namespaces["istio-system"].name
+#   depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istio-base]
+# }
+
+resource "helm_release" "istiod" {
+  provider   = helm.eks-helm
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "istiod"
+  name       = "istiod"
+  namespace  = var.namespaces["istio-system"].name
+  values     = ["${file("values/istiod.yaml")}"]
+
+  depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istio-base]
+}
+
+resource "helm_release" "istio-ingress" {
+  provider   = helm.eks-helm
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "gateway"
+  name       = "istio-ingressgateway"
+  namespace  = var.namespaces["istio-system"].name
+  # values     = ["${file("values/istio-ingress.yaml")}"]
+
+  depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istiod]
+
 }
