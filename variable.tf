@@ -104,6 +104,16 @@ variable "autoscaler" {
   sensitive = true
 }
 
+
+variable "cloudwatch" {
+  type = object({
+    token     = string
+    chart_url = string
+    chart     = string
+  })
+  sensitive = true
+}
+
 variable "limit_range" {
   type = object({
     default_limit = object({

@@ -53,6 +53,16 @@ resource "helm_release" "autoscaler" {
   depends_on = [kubernetes_namespace.namespace["autoscaler"], null_resource.download_chart, helm_release.istiod]
 }
 
+
+resource "helm_release" "cloudwatch" {
+  provider  = helm.eks-helm
+  name      = "cluster-cloudwatch"
+  chart     = "./${var.cloudwatch.chart}"
+  namespace = var.namespaces["amazon-cloudwatch"].name
+
+  depends_on = [kubernetes_namespace.namespace["amazon-cloudwatch"], null_resource.download_chart, helm_release.istiod]
+}
+
 resource "helm_release" "istio-base" {
   provider   = helm.eks-helm
   repository = "https://istio-release.storage.googleapis.com/charts"
