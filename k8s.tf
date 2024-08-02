@@ -114,3 +114,28 @@ resource "kubernetes_network_policy" "network_policy" {
 
   depends_on = [module.eks, kubernetes_namespace.namespace]
 }
+
+
+resource "kubernetes_secret_v1" "docker_registry" {
+  provider = kubernetes.k8s
+  for_each = var.namespaces
+  metadata {
+    name      = "docker-secret"
+    namespace = each.value.name
+  }
+  data = {
+    ".dockerconfigjson" = jsonencode({
+      auths = {
+        "https://index.docker.io/v1/" = {
+          username = var.docker_registry_secret.username
+          password = var.docker_registry_secret.password
+          email    = var.docker_registry_secret.email
+          auth     = var.docker_registry_secret.auth
+        }
+      }
+    })
+  }
+
+  type = "kubernetes.io/dockerconfigjson"
+  depends_on = [module.eks, kubernetes_namespace.namespace]
+}
