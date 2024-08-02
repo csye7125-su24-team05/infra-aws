@@ -64,6 +64,16 @@ resource "helm_release" "cloudwatch" {
   depends_on = [kubernetes_namespace.namespace["amazon-cloudwatch"], null_resource.download_chart, helm_release.istiod]
 }
 
+resource "helm_release" "prometheus" {
+  provider  = helm.eks-helm
+  name      = "prometheus"
+  chart     = "./${var.prometheus.chart}"
+  namespace = var.namespaces["prometheus"].name
+  values    = ["${file("values/prometheus.yaml")}"]
+
+  depends_on = [kubernetes_namespace.namespace["prometheus"], null_resource.download_chart, helm_release.istiod]
+}
+
 resource "helm_release" "istio-base" {
   provider   = helm.eks-helm
   repository = "https://istio-release.storage.googleapis.com/charts"
@@ -101,8 +111,30 @@ resource "helm_release" "istio-ingress" {
   chart      = "gateway"
   name       = "istio-ingressgateway"
   namespace  = var.namespaces["istio-system"].name
-  # values     = ["${file("values/istio-ingress.yaml")}"]
+  values     = ["${file("values/istio-ingress.yaml")}"]
 
   depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istiod]
 
 }
+
+resource "helm_release" "kafka-exporter" {
+  provider   = helm.eks-helm
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "prometheus-kafka-exporter"
+  name       = "prometheus-kafka"
+  namespace  = var.namespaces["kafka"].name
+  values     = ["${file("values/prometheus-kafka-exporter.yaml")}"]
+  depends_on = [kubernetes_namespace.namespace["kafka"], helm_release.istiod]
+}
+
+
+# resource "helm_release" "cert-manager" {
+#   provider = helm.eks-helm
+#   repository = "https://charts.jetstack.io"
+#   chart = "cert-manager"
+#   name = "cert-manager"
+#   version = "v1.5.3"
+#   namespace = var.namespaces["cert-manager"].name
+
+#   depends_on = [ kubernetes_namespace.namespace["cert-manager"] ]
+# }

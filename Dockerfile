@@ -1,0 +1,1 @@
+FROM docker.io/istio:1.23.0-alpha.0

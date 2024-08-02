@@ -66,3 +66,5 @@ Session.vim
 dist/*
 
 .env
+
+*.tz

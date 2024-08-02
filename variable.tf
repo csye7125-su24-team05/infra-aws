@@ -114,6 +114,15 @@ variable "cloudwatch" {
   sensitive = true
 }
 
+variable "prometheus" {
+  type = object({
+    token     = string
+    chart_url = string
+    chart     = string
+  })
+  sensitive = true
+}
+
 variable "limit_range" {
   type = object({
     default_limit = object({
@@ -124,5 +133,24 @@ variable "limit_range" {
       memory = string
       cpu    = string
     })
+  })
+}
+
+variable "docker_registry_secret" {
+  type = object({
+    username = string
+    password = string
+    email    = string
+    auth     = string
+  })
+  sensitive = true
+}
+
+variable "route_record" {
+  type = object({
+    name = string
+    type = string
+    ttl  = number
+    zone = string
   })
 }

@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grafana
+  namespace: default
+spec:
+  hosts:
+    - "grafana.nexflare.me"
+  gateways:
+    - istio-system/grafana-gateway
+  http:
+    - match:
+      - uri:
+          prefix: "/"
+      route:
+      - destination:
+          host: prometheus-grafana
+          port:
+            number: 80
+  # http:
+  #   - match:
+  #       - uri:
+  #           prefix: "/"
+  #       - route:
+  #           - destination:
+  #               host: prometheus-grafana.istio-system.svc.cluster.local
+  #               port:
+  #                 number: 80
