@@ -67,9 +67,9 @@ resource "helm_release" "cloudwatch" {
 resource "helm_release" "prometheus" {
   provider  = helm.eks-helm
   name      = "prometheus"
-  chart = "./${var.prometheus.chart}"
+  chart     = "./${var.prometheus.chart}"
   namespace = var.namespaces["prometheus"].name
-  values = ["${file("values/prometheus.yaml")}"]
+  values    = ["${file("values/prometheus.yaml")}"]
 
   depends_on = [kubernetes_namespace.namespace["prometheus"], null_resource.download_chart, helm_release.istiod]
 }
@@ -118,12 +118,12 @@ resource "helm_release" "istio-ingress" {
 }
 
 resource "helm_release" "kafka-exporter" {
-  provider = helm.eks-helm
+  provider   = helm.eks-helm
   repository = "https://prometheus-community.github.io/helm-charts"
-  chart = "prometheus-kafka-exporter"
-  name = "prometheus-kafka"
-  namespace = var.namespaces["kafka"].name
-  values = ["${file("values/prometheus-kafka-exporter.yaml")}"]
+  chart      = "prometheus-kafka-exporter"
+  name       = "prometheus-kafka"
+  namespace  = var.namespaces["kafka"].name
+  values     = ["${file("values/prometheus-kafka-exporter.yaml")}"]
   depends_on = [kubernetes_namespace.namespace["kafka"], helm_release.istiod]
 }
 

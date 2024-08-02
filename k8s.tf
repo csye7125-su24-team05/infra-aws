@@ -136,6 +136,6 @@ resource "kubernetes_secret_v1" "docker_registry" {
     })
   }
 
-  type = "kubernetes.io/dockerconfigjson"
+  type       = "kubernetes.io/dockerconfigjson"
   depends_on = [module.eks, kubernetes_namespace.namespace]
 }

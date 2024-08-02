@@ -1,5 +1,5 @@
 data "aws_route53_zone" "selected" {
-  name         = var.route_record.zone
+  name = var.route_record.zone
 }
 
 data "kubernetes_service" "istio_ingressgateway" {

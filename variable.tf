@@ -138,10 +138,10 @@ variable "limit_range" {
 
 variable "docker_registry_secret" {
   type = object({
-      username = string
-      password = string
-      email    = string
-      auth     = string
+    username = string
+    password = string
+    email    = string
+    auth     = string
   })
   sensitive = true
 }
