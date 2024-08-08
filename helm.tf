@@ -144,7 +144,7 @@ module "eks_blueprints_addons" {
   version = "~> 1.16"
 
   providers = {
-    aws = aws.profile
+    aws  = aws.profile
     helm = helm.eks-helm
   }
 
@@ -155,7 +155,7 @@ module "eks_blueprints_addons" {
 
   enable_external_dns                   = true
   enable_cert_manager                   = true
-  enable_metrics_server = true
+  enable_metrics_server                 = true
   cert_manager_route53_hosted_zone_arns = [data.aws_route53_zone.hosted_zone.arn]
   external_dns_route53_zone_arns        = [data.aws_route53_zone.hosted_zone.arn]
   external_dns = {
