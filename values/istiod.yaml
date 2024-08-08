@@ -26,14 +26,14 @@ defaults:
     resources:
       requests:
         cpu: 300m
-        memory: 500Mi
+        memory: 300Mi
 
     # Set to `type: RuntimeDefault` to use the default profile if available.
     seccompProfile: {}
 
     # Whether to use an existing CNI installation
     cni:
-      enabled: true
+      enabled: false
       provider: default
 
     # Additional container arguments
@@ -231,7 +231,7 @@ defaults:
     # block in the relevant section below and setting the desired resources values.
     defaultResources:
       requests:
-        cpu: 10m
+        cpu: 20m
         memory: 128Mi
       limits:
         cpu: 100m
@@ -373,8 +373,8 @@ defaults:
           cpu: 100m
           memory: 128Mi
         limits:
-          cpu: 1000m
-          memory: 1024Mi
+          cpu: 100m
+          memory: 200Mi
 
       # Default port for Pilot agent health checks. A value of 0 will disable health checking.
       statusPort: 15020

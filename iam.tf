@@ -1,3 +1,4 @@
+# IAM roles and policies for EKS cluster
 data "aws_iam_policy_document" "eks_assume_role_policy" {
   provider = aws.profile
   statement {

@@ -101,7 +101,10 @@ resource "kubernetes_network_policy" "network_policy" {
         protocol = "TCP"
         port     = "15020"
       }
-
+      ports {
+        protocol = "TCP"
+        port     = "9308"
+      }
       ports {
         protocol = "TCP"
         port     = "8080"

@@ -5,7 +5,7 @@ global:
     database: ""
     repmgrUsername: ""
     repmgrPassword: ""
-    repmgrDatabase: "repmgr"
+    repmgrDatabase: ""
     existingSecret: ""
   pgpool:
     adminUsername: ""
@@ -23,14 +23,12 @@ postgresql:
         - port: 9187
           protocol: TCP
         from: []
-  # extendedConf:
-  #   log_destination: 'stderr'
-  #   logging_collector: 'on'
-  #   log_directory: 'pg_log'
-  #   log_filename: 'postgresql.log'
-  #   log_format: 'json'
-  #   log_statement: 'all'
-  #   log_timezone: 'UTC'
+  # extendedConf: |-
+  #   log_destination = 'jsonlog'
+  #   logging_collector = on
+  #   log_directory = '/opt/bitnami/postgresql/logs'
+  #   log_filename = 'postgresql.log'
+
 pgpool:
   networkPolicy:
     enabled: true
@@ -62,10 +60,14 @@ pgpool:
             matchLabels:
               name: istio-system
 persistence:
-  size: 2Gi
+  size: 1Gi
 
 commonLabels:
   app: postgresql-cve
+  sidecar.istio.io/inject: "false"
 
 metrics:
   enabled: true
+
+rbac:
+  create: true

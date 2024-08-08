@@ -24,7 +24,7 @@ resource "helm_release" "postgresql-ha" {
     value = kubernetes_storage_class.storage_class.metadata[0].name
   }
 
-  depends_on = [kubernetes_namespace.namespace["subscriber"], kubernetes_storage_class.storage_class, helm_release.istiod]
+  depends_on = [kubernetes_namespace.namespace["subscriber"], kubernetes_storage_class.storage_class, module.eks_blueprints_addons, helm_release.istiod]
 }
 
 resource "helm_release" "kafka-ha" {
@@ -40,7 +40,7 @@ resource "helm_release" "kafka-ha" {
     value = kubernetes_storage_class.storage_class.metadata[0].name
   }
 
-  depends_on = [kubernetes_namespace.namespace["kafka"], kubernetes_storage_class.storage_class, helm_release.istiod]
+  depends_on = [kubernetes_namespace.namespace["kafka"], kubernetes_storage_class.storage_class, module.eks_blueprints_addons, helm_release.istiod]
 }
 
 resource "helm_release" "autoscaler" {
@@ -50,7 +50,7 @@ resource "helm_release" "autoscaler" {
   namespace = var.namespaces["autoscaler"].name
   values    = ["${file("values/autoscaler.yaml")}"]
 
-  depends_on = [kubernetes_namespace.namespace["autoscaler"], null_resource.download_chart, helm_release.istiod]
+  depends_on = [kubernetes_namespace.namespace["autoscaler"], null_resource.download_chart]
 }
 
 
@@ -61,7 +61,7 @@ resource "helm_release" "cloudwatch" {
   namespace = var.namespaces["amazon-cloudwatch"].name
   values    = ["${file("values/cloudwatch.yaml")}"]
 
-  depends_on = [kubernetes_namespace.namespace["amazon-cloudwatch"], null_resource.download_chart, helm_release.istiod]
+  depends_on = [kubernetes_namespace.namespace["amazon-cloudwatch"], null_resource.download_chart]
 }
 
 resource "helm_release" "prometheus" {
@@ -85,14 +85,14 @@ resource "helm_release" "istio-base" {
   depends_on = [kubernetes_namespace.namespace["istio-system"]]
 }
 
-resource "helm_release" "istio-cni" {
-  provider   = helm.eks-helm
-  repository = "https://istio-release.storage.googleapis.com/charts"
-  chart      = "cni"
-  name       = "istio-cni"
-  namespace  = var.namespaces["istio-system"].name
-  depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istio-base]
-}
+# resource "helm_release" "istio-cni" {
+#   provider   = helm.eks-helm
+#   repository = "https://istio-release.storage.googleapis.com/charts"
+#   chart      = "cni"
+#   name       = "istio-cni"
+#   namespace  = var.namespaces["istio-system"].name
+#   depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istio-base]
+# }
 
 resource "helm_release" "istiod" {
   provider   = helm.eks-helm
@@ -106,14 +106,15 @@ resource "helm_release" "istiod" {
 }
 
 resource "helm_release" "istio-ingress" {
-  provider   = helm.eks-helm
-  repository = "https://istio-release.storage.googleapis.com/charts"
-  chart      = "gateway"
-  name       = "istio-ingressgateway"
-  namespace  = var.namespaces["istio-system"].name
-  values     = ["${file("values/istio-ingress.yaml")}"]
+  provider         = helm.eks-helm
+  repository       = "https://istio-release.storage.googleapis.com/charts"
+  chart            = "gateway"
+  name             = "istio-ingress"
+  namespace        = "istio-ingress"
+  create_namespace = true
+  values           = ["${file("values/istio-ingress.yaml")}"]
 
-  depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istiod]
+  depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istiod, module.eks_blueprints_addons]
 
 }
 
@@ -124,17 +125,48 @@ resource "helm_release" "kafka-exporter" {
   name       = "prometheus-kafka"
   namespace  = var.namespaces["kafka"].name
   values     = ["${file("values/prometheus-kafka-exporter.yaml")}"]
-  depends_on = [kubernetes_namespace.namespace["kafka"], helm_release.istiod]
+  depends_on = [kubernetes_namespace.namespace["kafka"], module.eks_blueprints_addons, helm_release.kafka-ha]
 }
 
+locals {
+  name                = basename(path.cwd)
+  istio_chart_url     = "https://istio-release.storage.googleapis.com/charts"
+  istio_chart_version = "1.20.2"
 
-# resource "helm_release" "cert-manager" {
-#   provider = helm.eks-helm
-#   repository = "https://charts.jetstack.io"
-#   chart = "cert-manager"
-#   name = "cert-manager"
-#   version = "v1.5.3"
-#   namespace = var.namespaces["cert-manager"].name
+  tags = {
+    Blueprint  = local.name
+    GithubRepo = "github.com/aws-ia/terraform-aws-eks-blueprints"
+  }
+}
 
-#   depends_on = [ kubernetes_namespace.namespace["cert-manager"] ]
-# }
+module "eks_blueprints_addons" {
+  source  = "aws-ia/eks-blueprints-addons/aws"
+  version = "~> 1.16"
+
+  providers = {
+    aws  = aws.profile
+    helm = helm.eks-helm
+  }
+
+  cluster_name      = module.eks.cluster_name
+  cluster_endpoint  = module.eks.cluster_endpoint
+  cluster_version   = module.eks.cluster_version
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
+  enable_external_dns                   = true
+  enable_cert_manager                   = true
+  enable_metrics_server                 = true
+  cert_manager_route53_hosted_zone_arns = [data.aws_route53_zone.hosted_zone.arn]
+  external_dns_route53_zone_arns        = [data.aws_route53_zone.hosted_zone.arn]
+  external_dns = {
+    values = ["${file("values/external-dns.yaml")}"]
+  }
+
+  metrics_server = {
+    values = ["${file("values/metrics-server.yaml")}"]
+  }
+
+  tags = local.tags
+
+  depends_on = [module.eks, data.aws_route53_zone.hosted_zone]
+}
