@@ -146,11 +146,8 @@ variable "docker_registry_secret" {
   sensitive = true
 }
 
-variable "route_record" {
-  type = object({
+variable "hosted_zones" {
+  type = map(object({
     name = string
-    type = string
-    ttl  = number
-    zone = string
-  })
+  }))
 }

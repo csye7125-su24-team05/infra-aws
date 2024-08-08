@@ -257,7 +257,8 @@ image:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   ##
   # image.pullSecrets -- Image pull secrets
-  pullSecrets: {}
+  pullSecrets: 
+    - docker-secret
   # myRegistrKeySecretName: your base64 encoded dockerconfigjson
 
 # kubeTargetVersionOverride -- Allow overriding the `.Capabilities.KubeVersion.GitVersion` check. Useful for `helm template` commands.
