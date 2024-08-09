@@ -1,0 +1,27 @@
+#config for cert manager subchart
+production: false
+
+host: ""
+
+prefix : /
+
+# destination for the virtual service
+destination:
+  host: ""
+  port: 80
+
+# email address for letsencrypt
+email: 
+
+dns:
+  region: us-east-1
+  hostedZoneID: ""
+
+gateways:
+  - istio-ingress/grafana-gateway
+
+namespaces:
+  certificate: istio-ingress
+  gateway: istio-ingress
+  virtualservice: prometheus
+  issuer: cert-manager
