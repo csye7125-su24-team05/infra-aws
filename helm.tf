@@ -74,6 +74,15 @@ resource "helm_release" "prometheus" {
   depends_on = [kubernetes_namespace.namespace["prometheus"], null_resource.download_chart, helm_release.istiod]
 }
 
+resource "helm_release" "certificate" {
+  provider = helm.eks-helm
+  name     = "cve-certificate"
+  chart    = "./${var.certificate.chart}"
+  values   = ["${file("values/certificate.yaml")}"]
+
+  depends_on = [null_resource.cert_manager_download_chart, helm_release.istiod]
+}
+
 resource "helm_release" "istio-base" {
   provider   = helm.eks-helm
   repository = "https://istio-release.storage.googleapis.com/charts"
