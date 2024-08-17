@@ -61,7 +61,7 @@ variable "eks" {
       capacity_type  = string
       ami_type       = optional(string)
       label          = optional(map(string))
-      taints = any
+      taints         = any
     }))
     enable_cluster_creator_admin_permissions = bool
     tags                                     = map(string)
