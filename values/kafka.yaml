@@ -42,7 +42,7 @@ provisioning:
     sidecar.istio.io/inject: "false"
   topics:
     - name: cve-data-push
-      partitions: 3
+      partitions: 10
       replicationFactor: 3
   # postScript: |-
   #   #!/bin/bash
@@ -52,7 +52,7 @@ provisioning:
 
 persistence:
   enabled: true
-  size: 5Gi
+  size: 2Gi
 
 metrics:
   # jmx:

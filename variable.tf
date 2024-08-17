@@ -59,6 +59,9 @@ variable "eks" {
       desired_size   = number
       instance_types = list(string)
       capacity_type  = string
+      ami_type       = optional(string)
+      label          = optional(map(string))
+      taints         = any
     }))
     enable_cluster_creator_admin_permissions = bool
     tags                                     = map(string)

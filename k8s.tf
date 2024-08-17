@@ -109,6 +109,14 @@ resource "kubernetes_network_policy" "network_policy" {
         protocol = "TCP"
         port     = "8080"
       }
+      ports {
+        protocol = "TCP"
+        port     = "8501"
+      }
+      ports {
+        protocol = "TCP"
+        port     = "11434"
+      }
     }
 
     egress {}

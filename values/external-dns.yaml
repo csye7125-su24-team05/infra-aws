@@ -222,6 +222,7 @@ txtSuffix:
 ## - Limit possible target zones by domain suffixes.
 domainFilters: 
   - grafana.nexflare.me
+  - cve.nexflare.me
 
 ## -- Intentionally exclude domains from being managed.
 excludeDomains: []

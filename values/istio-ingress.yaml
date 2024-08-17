@@ -58,7 +58,7 @@ defaults:
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-      external-dns.alpha.kubernetes.io/hostname: "grafana.nexflare.me"
+      external-dns.alpha.kubernetes.io/hostname: "grafana.nexflare.me,cve.nexflare.me"
     loadBalancerIP: ""
     loadBalancerSourceRanges: []
     externalTrafficPolicy: ""
