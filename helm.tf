@@ -157,8 +157,8 @@ module "eks_blueprints_addons" {
   enable_external_dns                   = true
   enable_cert_manager                   = true
   enable_metrics_server                 = true
-  cert_manager_route53_hosted_zone_arns = [data.aws_route53_zone.hosted_zone.arn]
-  external_dns_route53_zone_arns        = [data.aws_route53_zone.hosted_zone.arn]
+  cert_manager_route53_hosted_zone_arns = [data.aws_route53_zone.cve.arn, data.aws_route53_zone.grafana.arn]
+  external_dns_route53_zone_arns        = [data.aws_route53_zone.cve.arn, data.aws_route53_zone.grafana.arn]
   external_dns = {
     values = ["${file("values/external-dns.yaml")}"]
   }
@@ -169,5 +169,5 @@ module "eks_blueprints_addons" {
 
   tags = local.tags
 
-  depends_on = [module.eks, data.aws_route53_zone.hosted_zone]
+  depends_on = [module.eks, data.aws_route53_zone.cve, data.aws_route53_zone.grafana]
 }
