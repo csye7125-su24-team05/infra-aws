@@ -54,6 +54,9 @@ module "eks" {
       vpc_id          = aws_vpc.cluster_vpc.id
       subnet_ids      = values(aws_subnet.subnets)[*].id
       iam_role_arn    = aws_iam_role.eks_node_role.arn
+      ami_type        = try(value.ami_type, null)
+      label           = try(value.label, null)
+      taints          = try(value.taints, {})
     }
   }
 

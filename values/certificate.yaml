@@ -1,13 +1,13 @@
 #config for cert manager subchart
-production: false
+production: true
 
-host: ""
+host: grafana.nexflare.me
 
 prefix : /
 
 # destination for the virtual service
 destination:
-  host: ""
+  host: prometheus-grafana.prometheus.svc.cluster.local
   port: 80
 
 # email address for letsencrypt
@@ -15,7 +15,7 @@ email:
 
 dns:
   region: us-east-1
-  hostedZoneID: ""
+  hostedZoneID: Z0476827N51ME825SEX8
 
 gateways:
   - istio-ingress/grafana-gateway

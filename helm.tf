@@ -75,10 +75,11 @@ resource "helm_release" "prometheus" {
 }
 
 resource "helm_release" "certificate" {
-  provider = helm.eks-helm
-  name     = "cve-certificate"
-  chart    = "./${var.certificate.chart}"
-  values   = ["${file("values/certificate.yaml")}"]
+  provider  = helm.eks-helm
+  name      = "cve-certificate"
+  chart     = "./${var.certificate.chart}"
+  values    = ["${file("values/certificate.yaml")}"]
+  namespace = var.namespaces["cert-manager"].name
 
   depends_on = [null_resource.cert_manager_download_chart, helm_release.istiod]
 }
@@ -93,15 +94,6 @@ resource "helm_release" "istio-base" {
 
   depends_on = [kubernetes_namespace.namespace["istio-system"]]
 }
-
-# resource "helm_release" "istio-cni" {
-#   provider   = helm.eks-helm
-#   repository = "https://istio-release.storage.googleapis.com/charts"
-#   chart      = "cni"
-#   name       = "istio-cni"
-#   namespace  = var.namespaces["istio-system"].name
-#   depends_on = [kubernetes_namespace.namespace["istio-system"], helm_release.istio-base]
-# }
 
 resource "helm_release" "istiod" {
   provider   = helm.eks-helm
